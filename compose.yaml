@@ -1,0 +1,108 @@
+# Portal backends in Docker.
+#
+# No images are built: each container is stock ubuntu:24.04 (same glibc as
+# this host) with the project's existing conda env bind-mounted read-only at
+# its real path, so the interpreter and every dependency resolve exactly as
+# they do on the host. Projects are mounted :ro wherever the app doesn't
+# write; the ca_donors DuckDBs (contact_analysis_data) are :ro as a hard
+# guarantee on top of the app's own read_only=True. Ports publish on
+# 127.0.0.1 only — the portal on the host is still the sole public doorway,
+# and LLM traffic goes to the host portal's metering proxy via host-gateway.
+#
+# Run:   docker compose up -d          (from this directory)
+# Stop:  docker compose down
+# Needs: user in the docker group (sudo usermod -aG docker ai1; re-login)
+
+name: portal-backends
+
+x-common: &common
+  image: ubuntu:24.04
+  user: "1000:1000"
+  restart: unless-stopped
+  init: true
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  tmpfs:
+    - /home/ai1/.cache:uid=1000,gid=1000
+  environment: &common-env
+    HOME: /home/ai1
+    BIND_HOST: 0.0.0.0
+    ANTHROPIC_BASE_URL: http://host.docker.internal:8100/_anthropic
+
+services:
+  omaha:
+    <<: *common
+    command: /home/ai1/anaconda3/envs/omaha/bin/python /home/ai1/Documents/portal/omaha_web.py
+    ports:
+      - "127.0.0.1:5051:5051"
+    volumes:
+      - /home/ai1/anaconda3/envs/omaha:/home/ai1/anaconda3/envs/omaha:ro
+      - /home/ai1/Documents/portal:/home/ai1/Documents/portal:ro
+      - /home/ai1/Documents/omaha_rl:/home/ai1/Documents/omaha_rl:ro
+      - /home/ai1/poker_ai_data/benchmarks:/home/ai1/poker_ai_data/benchmarks:ro
+
+  arcade:
+    <<: *common
+    command: /home/ai1/anaconda3/envs/p312/bin/python /home/ai1/Documents/portal/run_arcade.py
+    ports:
+      - "127.0.0.1:8001:8001"
+    # arcade legitimately writes its own state (settings.json, custom sets,
+    # vocab.db, img_cache) -> project mounted rw
+    volumes:
+      - /home/ai1/anaconda3/envs/p312:/home/ai1/anaconda3/envs/p312:ro
+      - /home/ai1/Documents/portal:/home/ai1/Documents/portal:ro
+      - /home/ai1/Documents/arcade:/home/ai1/Documents/arcade
+    # needs ANTHROPIC_API_KEY (letter recognition / vocab); reads the master env
+    env_file:
+      - /home/ai1/Documents/.env
+
+  fof:
+    <<: *common
+    working_dir: /home/ai1/Documents/ca_donors
+    command: /home/ai1/anaconda3/envs/p312/bin/python ca_donors.py --host 0.0.0.0 --port 5056
+    ports:
+      - "127.0.0.1:5056:5056"
+    volumes:
+      - /home/ai1/anaconda3/envs/p312:/home/ai1/anaconda3/envs/p312:ro
+      - /home/ai1/Documents/ca_donors:/home/ai1/Documents/ca_donors:ro
+      # the two dirs the app writes, remounted rw over the ro project
+      - /home/ai1/Documents/ca_donors/ca_donors_cache:/home/ai1/Documents/ca_donors/ca_donors_cache
+      - /home/ai1/Documents/ca_donors/ca_donors_contexts:/home/ai1/Documents/ca_donors/ca_donors_contexts
+      # DuckDBs: read-only, per owner's requirement
+      - /home/ai1/Documents/contact_analysis_data:/home/ai1/Documents/contact_analysis_data:ro
+
+  fof-guest:
+    <<: *common
+    working_dir: /home/ai1/Documents/ca_donors
+    command: /home/ai1/anaconda3/envs/p312/bin/python ca_donors.py --host 0.0.0.0 --port 5057 --guest
+    ports:
+      - "127.0.0.1:5057:5057"
+    volumes:
+      - /home/ai1/anaconda3/envs/p312:/home/ai1/anaconda3/envs/p312:ro
+      - /home/ai1/Documents/ca_donors:/home/ai1/Documents/ca_donors:ro
+      - /home/ai1/Documents/ca_donors/ca_donors_cache:/home/ai1/Documents/ca_donors/ca_donors_cache
+      - /home/ai1/Documents/ca_donors/ca_donors_contexts:/home/ai1/Documents/ca_donors/ca_donors_contexts
+      - /home/ai1/Documents/contact_analysis_data:/home/ai1/Documents/contact_analysis_data:ro
+
+  aiprep:
+    <<: *common
+    command: /home/ai1/anaconda3/envs/p312/bin/python /home/ai1/Documents/portal/run_aiprep.py
+    ports:
+      - "127.0.0.1:8006:8006"
+    # writes quiz/progress state inside the project -> rw
+    volumes:
+      - /home/ai1/anaconda3/envs/p312:/home/ai1/anaconda3/envs/p312:ro
+      - /home/ai1/Documents/portal:/home/ai1/Documents/portal:ro
+      - /home/ai1/Documents/AI_prep:/home/ai1/Documents/AI_prep
+
+  fridge:
+    <<: *common
+    working_dir: /home/ai1/Documents/fridge_recipes
+    command: /home/ai1/anaconda3/envs/rs313/bin/python -m uvicorn web.main:app --host 0.0.0.0 --port 8007
+    ports:
+      - "127.0.0.1:8007:8007"
+    volumes:
+      - /home/ai1/anaconda3/envs/rs313:/home/ai1/anaconda3/envs/rs313:ro
+      - /home/ai1/Documents/fridge_recipes:/home/ai1/Documents/fridge_recipes:ro
+      # its sqlite + logs live under data/ -> rw
+      - /home/ai1/Documents/fridge_recipes/data:/home/ai1/Documents/fridge_recipes/data
