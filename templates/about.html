@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About this portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:#10141c;color:#e8eaf0;
+     font-family:system-ui,-apple-system,sans-serif;padding:22px;max-width:980px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:1.25rem}
+.who a{color:#7fa7f5;text-decoration:none;font-size:.8rem}
+.layout{display:flex;gap:16px;align-items:flex-start}
+nav.box{flex:0 0 200px;position:sticky;top:16px;background:#1a2130;
+        border:1px solid #242e44;border-radius:14px;padding:14px}
+nav.box h2{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;
+           opacity:.55;margin-bottom:10px}
+nav.box a{display:block;padding:7px 10px;margin:2px 0;border-radius:8px;
+          color:#cfd6e4;text-decoration:none;font-size:.86rem}
+nav.box a:hover{background:rgba(91,141,239,.14);color:#fff}
+.pane{flex:1;min-width:0;background:#141a26;border:1px solid #1f2940;border-radius:14px;
+      padding:4px 20px;max-height:calc(100vh - 130px);overflow-y:auto;scroll-behavior:smooth}
+.pane section{padding:20px 0;border-bottom:1px solid rgba(255,255,255,.06);scroll-margin-top:12px}
+.pane section:last-child{border-bottom:none}
+.pane h3{font-size:1.02rem;margin-bottom:8px;color:#9ec1f7}
+.pane p{font-size:.86rem;line-height:1.65;opacity:.85;margin-bottom:8px}
+.pane .hint{font-size:.78rem;background:rgba(64,180,110,.1);border:1px solid rgba(64,180,110,.3);
+            color:#8fd3a5;border-radius:8px;padding:8px 10px;margin-top:6px}
+code{background:rgba(255,255,255,.09);border-radius:4px;padding:1px 5px;font-size:.82em}
+@media (max-width:700px){
+  .layout{flex-direction:column}
+  nav.box{position:static;flex:none;width:100%}
+  .pane{max-height:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>What's in here?</h1>
+  <div class="who"><a href="/_portal/">&larr; portal</a></div>
+</header>
+
+<div class="layout">
+<nav class="box">
+  <h2>Apps</h2>
+  <a href="#portal">How the portal works</a>
+  <a href="#omaha">Omaha Poker vs AI</a>
+  <a href="#arcade">Arcade</a>
+  <a href="#aiprep">AI Prep</a>
+  <a href="#compass">Compass</a>
+  <a href="#praxis">Praxis</a>
+  <a href="#fridge">Fridge Recipes</a>
+  <a href="#fof">Donor Research</a>
+</nav>
+
+<div class="pane">
+<section id="portal">
+  <h3>How the portal works</h3>
+  <p>This is a single door to several personal projects. Pick an app from the
+  home grid and the portal serves it at this same address; the
+  <b>&#8962; Portal</b> button in the bottom bar always brings you back.
+  The bar also shows a live percentage of the AI budget this demo has used —
+  a few of the apps call Claude behind the scenes, and every call is metered.</p>
+  <p>Guest accounts are read-mostly by design: anything destructive or
+  credential-touching is blocked at the door, and some apps run in their own
+  demo/guest modes on top of that.</p>
+</section>
+
+<section id="omaha">
+  <h3>Omaha Poker vs AI</h3>
+  <p>Heads-up <b>Fixed-Limit Omaha Hi/Lo (8-or-better)</b> against a poker
+  agent trained from scratch by self-play with <b>Deep CFR</b>
+  (counterfactual regret minimization with neural networks). No hand-coded
+  strategy: everything it knows it learned from playing itself.</p>
+  <p>You get four hole cards; the best high hand and best qualifying low hand
+  split the pot. Stacks reset to a fixed baseline every hand — the
+  <i>session score</i> under "Hand over" is what tracks who's winning. There's
+  also a "vs Friend" mode: share the page URL with <code>?seat=1</code>.</p>
+  <div class="hint">Just press Start Game — no extra login, and this app uses
+  no AI-API budget (the agent runs locally).</div>
+</section>
+
+<section id="arcade">
+  <h3>Arcade</h3>
+  <p>A collection of <b>kids' learning games</b>: math (Math Smash, Math
+  Garden), spelling and phonics with real audio, letter drawing, memory match,
+  mazes and more. Sound games speak words out loud; the letter-drawing game
+  sends your child's drawing to an AI model that recognizes the letter.</p>
+  <div class="hint">Best on a tablet or touchscreen. The AI-powered games
+  (letter recognition, vocabulary) count against the budget bar.</div>
+</section>
+
+<section id="aiprep">
+  <h3>AI Prep</h3>
+  <p><b>Technical-interview practice.</b> A dashboard with multiple-choice
+  quizzes (data structures &amp; algorithms, ML system design), progress
+  tracking with accuracy rings, and <b>LeetCode Live</b>: take a real problem,
+  write pseudocode, and get an AI review of your approach.</p>
+  <div class="hint">Quiz answers are checked instantly; the pseudocode review
+  calls Claude and counts against the budget bar.</div>
+</section>
+
+<section id="compass">
+  <h3>Compass</h3>
+  <p>A <b>7-Habits-style weekly planner</b>: a mission statement, life roles
+  with goals, weekly "big rocks", day-by-day scheduled tasks with priorities
+  and estimates, and end-of-week reviews with computed stats and an
+  AI-written analysis of wins, concerns and patterns.</p>
+  <p>The demo shows a curated, always-current showcase: an in-flight week
+  plus two finished weeks of history — seeded into a separate database, so
+  it's fully isolated and read-only.</p>
+  <div class="hint">On its login page, type <code>demo</code> in the password
+  box to start the read-only tour. "Sign out" exits the demo.</div>
+</section>
+
+<section id="praxis">
+  <h3>Praxis</h3>
+  <p>A <b>personal deliberate-practice system</b> built on three books:
+  <i>Mindset</i> (Dweck), <i>Flow</i> (Csikszentmihalyi) and <i>Grit</i>
+  (Duckworth). Practice sessions are captured through a Telegram bot during
+  the day; this website is the review side — analytics, streaks and
+  reflections on the practice log.</p>
+  <div class="hint">The demo login is printed right on its welcome box:
+  username <code>guest</code>, password <code>demo</code>. Read-only.</div>
+</section>
+
+<section id="fridge">
+  <h3>Fridge Recipes</h3>
+  <p><b>"What can I cook with what I have?"</b> Stock a virtual fridge with
+  your ingredients and get matching recipes, including near-misses showing
+  what one more ingredient would unlock, plus AI-suggested substitutions.</p>
+  <div class="hint">The portal drops you straight into demo mode with its own
+  per-browser fridge — play freely, nothing you do touches real data.</div>
+</section>
+
+<section id="fof">
+  <h3>Donor Research</h3>
+  <p>A research tool over <b>California campaign-finance public records</b>
+  (CAL-ACCESS and NetFile filings): search donors, see their giving history
+  across candidates and committees with estimates vs. actuals, browse
+  candidates and PACs, and check filing deadlines.</p>
+  <p>Guests use a read-only instance: the underlying databases can't be
+  modified, and the external enrichment lookups (LinkedIn, RocketReach,
+  web search, AI questions) are allowed but capped by a shared usage meter.</p>
+  <div class="hint">Start at the donor search on the main page — the dataset
+  is real public-record data, so try any California donor name.</div>
+</section>
+</div>
+</div>
+
+{% include "usage_bar.html" %}
+</body>
+</html>

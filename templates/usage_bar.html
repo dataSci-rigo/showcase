@@ -1,0 +1,54 @@
+<style>
+#pbudget{position:fixed;left:0;right:0;bottom:0;z-index:99999;
+  display:flex;align-items:center;gap:10px;padding:6px 14px;
+  padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));
+  background:rgba(12,16,24,.92);backdrop-filter:blur(4px);
+  border-top:1px solid rgba(255,255,255,.08);color:#cfd6e4;
+  font:600 11px/1 system-ui,-apple-system,sans-serif}
+#pbudget a.pbudget-home{display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:6px;background:rgba(59,130,246,.18);
+  border:1px solid rgba(59,130,246,.45);color:#9ec1f7;text-decoration:none;
+  white-space:nowrap;touch-action:manipulation}
+#pbudget .pbudget-track{flex:1;height:6px;border-radius:3px;
+  background:rgba(255,255,255,.12);overflow:hidden}
+#pbudget #pbudget-fill{height:100%;width:0%;background:#3b82f6;transition:width .4s}
+/* keep page content from hiding behind the fixed bar */
+body{padding-bottom:56px !important}
+@media (max-width:480px){
+  #pbudget{gap:8px;padding:8px 10px;
+    padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+  #pbudget .pbudget-label{display:none}
+}
+</style>
+<div id="pbudget">
+  <a class="pbudget-home" href="/_portal/" target="_top">&#8962; Portal</a>
+  <span class="pbudget-label" style="opacity:.65;white-space:nowrap">API budget</span>
+  <div class="pbudget-track"><div id="pbudget-fill"></div></div>
+  <span id="pbudget-amt" style="white-space:nowrap">&hellip;</span>
+</div>
+<script>
+(function(){
+  // inside an iframe (e.g. arcade games) the outer page already shows the bar
+  if (window.self !== window.top) {
+    var el = document.getElementById('pbudget');
+    if (el) el.remove();
+    return;
+  }
+  async function upd(){
+    try{
+      const r = await fetch('/_portal/api/usage');
+      if(!r.ok) return;
+      const d = await r.json();
+      const pct = 100 * d.spent / d.budget;
+      const f = document.getElementById('pbudget-fill');
+      f.style.width = Math.min(100, pct) + '%';
+      f.style.background = pct > 90 ? '#e5484d' : pct > 60 ? '#e2a336' : '#3b82f6';
+      document.getElementById('pbudget-amt').textContent =
+        Math.round(pct) + '%' +
+        (pct >= 100 ? (d.hard_limit ? ' — AI paused' : ' — over budget') : '');
+    }catch(e){}
+  }
+  upd();
+  setInterval(upd, 60000);
+})();
+</script>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:#10141c;color:#e8eaf0;
+     font-family:system-ui,-apple-system,sans-serif;padding:22px;max-width:680px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+h1{font-size:1.3rem}
+.who{font-size:.8rem;opacity:.6}
+.who a{color:#7fa7f5;text-decoration:none;margin-left:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+a.tile{display:block;background:#1a2130;border:1px solid #242e44;border-radius:14px;
+       padding:20px 18px;text-decoration:none;color:inherit;transition:border-color .15s}
+a.tile:hover{border-color:#5b8def}
+a.tile.active{border-color:#2f6fed}
+.tile h2{font-size:1.02rem;margin-bottom:6px}
+.tile p{font-size:.8rem;opacity:.6;line-height:1.45}
+.badge{display:inline-block;font-size:.65rem;color:#8fd3a5;background:rgba(64,180,110,.12);
+       border-radius:6px;padding:2px 7px;margin-top:10px}
+@media (max-width:600px){
+  body{padding:14px}
+  header{flex-wrap:wrap;gap:8px}
+  .who{display:flex;gap:4px;flex-wrap:wrap}
+  .who a{padding:8px 6px;margin-left:0}
+  .grid{grid-template-columns:1fr;gap:10px}
+  a.tile{padding:16px 15px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Portal</h1>
+  <div class="who">{{ user }} <a href="/_portal/about">what's in here?</a> <a href="/_portal/logout">sign out</a></div>
+</header>
+<div class="grid">
+  {% for key, a in apps.items() %}
+  <a class="tile{% if key == active %} active{% endif %}" href="/_portal/open/{{ key }}">
+    <h2>{{ a.title }}</h2>
+    <p>{{ a.desc }}</p>
+    {% if key == active %}<span class="badge">currently open</span>{% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% include "usage_bar.html" %}
+</body>
+</html>

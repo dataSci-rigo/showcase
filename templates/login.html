@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portal — Sign in</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;
+     background:#10141c;color:#e8eaf0;font-family:system-ui,-apple-system,sans-serif}
+.card{width:min(92vw,360px);background:#1a2130;border-radius:14px;padding:30px 26px;
+      box-shadow:0 10px 40px rgba(0,0,0,.5)}
+h1{font-size:1.25rem;margin-bottom:4px}
+p.sub{font-size:.8rem;opacity:.55;margin-bottom:22px}
+label{display:block;font-size:.78rem;opacity:.75;margin:12px 0 4px}
+input{width:100%;padding:12px;border-radius:8px;border:1px solid #2c3750;
+      background:#0f1420;color:#fff;font-size:1rem}
+input:focus{outline:none;border-color:#5b8def}
+button{width:100%;margin-top:20px;padding:13px;border:none;border-radius:8px;
+       background:#2f6fed;color:#fff;font-size:1rem;font-weight:700;cursor:pointer}
+button:active{opacity:.8}
+.err{background:#3a1520;border:1px solid #7f2437;color:#ff9aa8;font-size:.82rem;
+     border-radius:8px;padding:10px;margin-bottom:14px}
+</style>
+</head>
+<body>
+<form class="card" method="post" autocomplete="off">
+  <h1>Portal</h1>
+  <p class="sub">Sign in to continue</p>
+  {% if error %}<div class="err">{{ error }}</div>{% endif %}
+  <label for="u">Username</label>
+  <input id="u" name="username" autocapitalize="none" autofocus required>
+  <label for="p">Password</label>
+  <input id="p" name="password" type="password" required>
+  <button type="submit">Sign in</button>
+</form>
+</body>
+</html>
