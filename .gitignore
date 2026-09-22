@@ -1,1 +1,4 @@
 .env
+__pycache__/
+users.json
+secret_key
