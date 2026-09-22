@@ -1,0 +1,16 @@
+[Unit]
+Description=Portal backend: arcade kids games (127.0.0.1:8001)
+After=network-online.target portal.service
+
+[Service]
+WorkingDirectory=/home/ai1/Documents/portal
+# arcade has no local .env; hand it the Anthropic key (used by the
+# letter-recognition and vocab endpoints) from the master env file.
+# LLM calls route through the portal's metering proxy.
+Environment=ANTHROPIC_BASE_URL=http://127.0.0.1:8100/_anthropic
+ExecStart=/bin/bash -c 'source <(grep "^ANTHROPIC_API_KEY=" /home/ai1/Documents/.env) && exec /home/ai1/anaconda3/envs/p312/bin/python run_arcade.py'
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

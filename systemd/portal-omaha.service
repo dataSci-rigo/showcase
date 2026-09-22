@@ -1,0 +1,14 @@
+[Unit]
+Description=Portal backend: Omaha poker vs Deep CFR agent (127.0.0.1:5051)
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/ai1/Documents/portal
+ExecStart=/home/ai1/anaconda3/envs/omaha/bin/python omaha_web.py
+Restart=on-failure
+RestartSec=5
+# agent load takes a while; don't let systemd think startup hung
+TimeoutStartSec=300
+
+[Install]
+WantedBy=default.target

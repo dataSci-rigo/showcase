@@ -1,0 +1,14 @@
+[Unit]
+Description=Portal backend: fridge-recipes web (127.0.0.1:8007)
+After=network-online.target portal.service
+
+[Service]
+WorkingDirectory=/home/ai1/Documents/fridge_recipes
+# LLM calls (recipe extraction, substitutions) route through the portal meter
+Environment=ANTHROPIC_BASE_URL=http://127.0.0.1:8100/_anthropic
+ExecStart=/home/ai1/anaconda3/envs/rs313/bin/python -m uvicorn web.main:app --host 127.0.0.1 --port 8007
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

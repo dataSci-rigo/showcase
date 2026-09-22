@@ -1,0 +1,13 @@
+[Unit]
+Description=Portal backends (Docker compose: omaha, arcade, fof, aiprep, fridge)
+After=network-online.target portal.service
+
+[Service]
+WorkingDirectory=/home/ai1/Documents/portal
+ExecStart=/usr/bin/docker compose -f /home/ai1/Documents/portal/compose.yaml up
+ExecStop=/usr/bin/docker compose -f /home/ai1/Documents/portal/compose.yaml down
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

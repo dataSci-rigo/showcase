@@ -1,0 +1,12 @@
+[Unit]
+Description=Portal backend: CA donor research tool (127.0.0.1:5056)
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/ai1/Documents/ca_donors
+ExecStart=/home/ai1/anaconda3/envs/p312/bin/python ca_donors.py --host 127.0.0.1 --port 5056
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

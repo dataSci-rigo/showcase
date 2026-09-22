@@ -1,0 +1,12 @@
+[Unit]
+Description=Login portal (auth + reverse proxy, 127.0.0.1:8100)
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/ai1/Documents/portal
+ExecStart=/home/ai1/anaconda3/envs/p312/bin/python portal_app.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

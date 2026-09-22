@@ -1,0 +1,14 @@
+[Unit]
+Description=Portal backend: AI_prep interview practice (127.0.0.1:8006)
+After=network-online.target portal.service
+
+[Service]
+WorkingDirectory=/home/ai1/Documents/portal
+# LLM calls (LeetCode review, quiz generation) route through the portal meter
+Environment=ANTHROPIC_BASE_URL=http://127.0.0.1:8100/_anthropic
+ExecStart=/home/ai1/anaconda3/envs/p312/bin/python run_aiprep.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

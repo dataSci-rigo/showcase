@@ -1,0 +1,11 @@
+[Unit]
+Description=Cloudflare tunnel -> portal (public entry point)
+After=network-online.target portal.service
+
+[Service]
+ExecStart=/bin/bash -c 'source <(grep "^CLOUDFLARED_TUNNEL=" /home/ai1/Documents/.env) && exec /usr/bin/cloudflared tunnel run --token "$CLOUDFLARED_TUNNEL"'
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
