@@ -85,6 +85,16 @@ APPS = {
         "home": "/demo",  # "/" is personal mode behind the app's own Basic Auth
         "blocked": [],
     },
+    "uasdemo": {
+        "title": "Drone Tracking Demo",
+        "desc": "AI Ventures counter-UAS demo: SAM2 / EfficientTAM keep each drone's ID while trees hide it. Track your own video too.",
+        "port": 8012,
+        # read-only page + videos, plus POST /api/submit (a YouTube link or an upload, <= 20 s,
+        # <= 95 MB, at most 3 waiting). Guests may submit; to make submitting owner-only, add
+        # r"^/api/submit" here (the job list at /api/jobs stays readable).
+        "blocked": [],
+        "max_body": 96 * 2**20,
+    },
     "fof": {
         "title": "Donor Research",
         "desc": "CA campaign-donations research tool (guests: read-only + metered lookups).",

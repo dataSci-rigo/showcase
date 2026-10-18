@@ -4,7 +4,8 @@ set -uo pipefail
 
 UNITS=(cloudflared-tunnel.service portal.service portal-backends.service
        portal-omaha.service portal-arcade.service portal-fof.service
-       portal-fof-guest.service portal-aiprep.service portal-fridge.service)
+       portal-fof-guest.service portal-aiprep.service portal-fridge.service
+       portal-uasdemo.service)
 for u in "${UNITS[@]}"; do
     systemctl --user disable --now "$u" 2>/dev/null
 done

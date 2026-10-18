@@ -13,7 +13,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 UNIT_DIR="$HOME/.config/systemd/user"
 
-BARE_UNITS=(portal-omaha.service portal-arcade.service portal-fof.service portal-fof-guest.service portal-aiprep.service portal-fridge.service)
+BARE_UNITS=(portal-omaha.service portal-arcade.service portal-fof.service portal-fof-guest.service portal-aiprep.service portal-fridge.service portal-uasdemo.service)
 if [[ "${1:-}" == "--bare" ]]; then
     UNITS=(portal.service "${BARE_UNITS[@]}" cloudflared-tunnel.service)
     OFF=(portal-backends.service)

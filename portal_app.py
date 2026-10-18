@@ -190,6 +190,14 @@ def proxy(path):
     backend = config.APPS[app_key]
 
     req_path = "/" + path
+    if any(seg in (".", "..") for seg in req_path.split("/")):
+        abort(400)  # dot segments would let a path dodge the guest blocklist below
+    if backend.get("max_body"):
+        # cap what this app's requests may carry (the body is buffered before forwarding);
+        # Flask 3.1 enforces it for chunked bodies too
+        if (request.content_length or 0) > backend["max_body"]:
+            abort(413)
+        request.max_content_length = backend["max_body"]
     if is_guest():
         if request.method not in config.GUEST_ALLOWED_METHODS:
             abort(403)

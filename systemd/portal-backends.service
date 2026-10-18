@@ -1,5 +1,5 @@
 [Unit]
-Description=Portal backends (Docker compose: omaha, arcade, fof, aiprep, fridge)
+Description=Portal backends (Docker compose: omaha, arcade, fof, aiprep, fridge, uasdemo)
 After=network-online.target portal.service
 
 [Service]

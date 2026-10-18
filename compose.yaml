@@ -106,3 +106,16 @@ services:
       - /home/ai1/Documents/fridge_recipes:/home/ai1/Documents/fridge_recipes:ro
       # its sqlite + logs live under data/ -> rw
       - /home/ai1/Documents/fridge_recipes/data:/home/ai1/Documents/fridge_recipes/data
+
+  uasdemo:
+    <<: *common
+    command: /home/ai1/anaconda3/envs/p312/bin/python /home/ai1/Documents/portal/run_uasdemo.py
+    ports:
+      - "127.0.0.1:8012:8012"
+    # project read-only; only submissions/ (job folders written by the web app) is rw.
+    # The GPU worker (uas-submit-worker) runs on the host, not in this container.
+    volumes:
+      - /home/ai1/anaconda3/envs/p312:/home/ai1/anaconda3/envs/p312:ro
+      - /home/ai1/Documents/portal:/home/ai1/Documents/portal:ro
+      - /home/ai1/Documents/ai-ventures/uas_demo:/home/ai1/Documents/ai-ventures/uas_demo:ro
+      - /home/ai1/Documents/ai-ventures/uas_demo/submissions:/home/ai1/Documents/ai-ventures/uas_demo/submissions

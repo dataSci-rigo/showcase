@@ -1,0 +1,13 @@
+[Unit]
+Description=Portal backend: AI Ventures drone-tracking demo (127.0.0.1:8012)
+After=network-online.target portal.service
+
+[Service]
+WorkingDirectory=/home/ai1/Documents/portal
+# static page + videos from ai-ventures/uas_demo/demo (read-only); no LLM calls
+ExecStart=/home/ai1/anaconda3/envs/p312/bin/python run_uasdemo.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

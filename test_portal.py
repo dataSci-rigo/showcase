@@ -53,7 +53,7 @@ r = c.post("/_portal/login", data={"username": TEST_USER, "password": TEST_PW})
 check("owner login -> home", r.status_code == 302 and "/_portal/" in r.location)
 r = c.get("/_portal/")
 check("home lists apps", b"Omaha" in r.data and b"Arcade" in r.data and b"AI Prep" in r.data
-      and b"Fridge" in r.data and b"Donor" in r.data)
+      and b"Fridge" in r.data and b"Donor" in r.data and b"Drone Tracking" in r.data)
 check("no image search tile", b"Image Search" not in r.data)
 
 r = c.get("/some/path")
@@ -89,6 +89,11 @@ check("fof /v2 proxied", r.status_code == 200)
 r = c.get("/download/linkedin_local.py")
 check("owner bypasses fof blocklist", r.status_code == 200, f"got {r.status_code}")
 
+c.get("/_portal/open/uasdemo")
+r = c.get("/")
+check("uasdemo proxied page", r.status_code == 200 and b"Below-Canopy Drone Tracking" in r.data)
+check("uasdemo budget bar injected", b"pbudget" in r.data)
+
 r = c.get("/_portal/logout")
 r = c.get("/")
 check("after logout -> login redirect", r.status_code == 302)
@@ -117,6 +122,14 @@ check("guest: /api/ask reaches guest instance (metered, not portal-blocked)",
       r.status_code != 403, f"got {r.status_code}")
 r = g.get("/download/linkedin_local.py")
 check("guest: /download blocked", r.status_code == 403)
+
+g.get("/_portal/open/uasdemo")
+r = g.get("/")
+check("guest: uasdemo page works", r.status_code == 200 and b"Below-Canopy Drone Tracking" in r.data)
+vids = __import__("re").findall(rb'src="(media/[^"]+\.mp4)"', r.data)
+if vids:
+    r = g.get("/" + vids[0].decode(), headers={"Range": "bytes=0-1023"})
+    check("guest: uasdemo video byte-range (206)", r.status_code == 206, f"got {r.status_code}")
 
 print(f"\n{ok} passed, {fail} failed")
 sys.exit(1 if fail else 0)

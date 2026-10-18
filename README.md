@@ -20,6 +20,7 @@ browser ── https (Cloudflare tunnel) ──> portal :8100 ──┬─> omah
                                                         ├─> ca_donors.py   :5056  (p312, ca_donors/)
                                                         ├─> run_aiprep.py  :8006  (p312)
                                                         ├─> uvicorn fridge :8007  (rs313)
+                                                        ├─> run_uasdemo.py :8012  (p312, static: ai-ventures/uas_demo/demo)
                                                         ├─> praxis demo    100.79.128.124:8008  (VM, via Tailscale)
                                                         └─> hab7bot web    100.79.128.124:3000  (VM, via Tailscale)
 ```
@@ -82,6 +83,27 @@ inference) using the loop from `examples/eval_agent_vs_bots.py`. Stacks reset
 to the training baseline every hand (the agent's mirrored env requires it);
 the cross-hand score is shown as a session total instead.
 
+## The drone-tracking demo
+
+[run_uasdemo.py](run_uasdemo.py) imports the app in
+`~/Documents/ai-ventures/uas_demo/uas_demo_web.py` on :8012: the built demo page
+(`demo/index.html` + `media/` annotated MP4s, posters and the proposal PDFs, rebuilt by
+`uas_demo_page.py` as tracking runs finish, no portal restart needed) and **Track your
+own video** at `/submit` (posts to `/api/submit`; add `r"^/api/submit"` to the app's `blocked` list to make submitting owner-only). A visitor pastes a YouTube link or uploads a clip (2–20 s,
+≤ 95 MB because Cloudflare caps request bodies at 100 MB, at most 3 waiting); the
+`uas-submit-worker` user unit (`ai-ventures/uas_demo/systemd/`, GPU, 10 GB memory cap)
+processes the queue one job at a time with EfficientTAM. Only YouTube links are
+accepted, and each is rebuilt from its 11-character video id, so nothing typed reaches
+yt-dlp or a shell. MP4 seeking works because werkzeug answers HTTP Range with 206.
+
+Install the worker once: `ln -s ~/Documents/ai-ventures/uas_demo/systemd/uas-submit-worker.service
+~/.config/systemd/user/ && systemctl --user daemon-reload && systemctl --user enable --now uas-submit-worker`.
+
+The footage comes from third-party YouTube videos (ZJU, CTU Prague, DARPA; see
+`ai-ventures/uas_demo/videos/SOURCES.md`), none Creative Commons. Anyone who
+logs in, guests included, can watch it, so keep the guest list to people the
+evaluation is meant for, or get the owners' permission first.
+
 ## API budget bar + metering
 
 The LLM-calling backends (arcade, AI Prep, fridge — and fof, though its
@@ -117,7 +139,7 @@ sqlite3 data/usage.db 'SELECT datetime(ts,"unixepoch","localtime"),model,input_t
 
 ## Run / deploy
 
-**Docker mode (default).** The five backends run as containers defined in
+**Docker mode (default).** The backends run as containers defined in
 [compose.yaml](compose.yaml): stock `ubuntu:24.04` (same glibc as the host)
 with the existing conda envs bind-mounted read-only at their real paths — no
 image builds, no pip. Projects are mounted `:ro` where the app doesn't write;
@@ -140,7 +162,7 @@ journalctl --user -u portal -f
 **Bare mode (tested fallback, no Docker):** `./install_services.sh --bare`
 runs each backend as its own systemd user unit on the host instead
 (`portal-omaha`, `portal-arcade`, `portal-fof`, `portal-fof-guest`,
-`portal-aiprep`, `portal-fridge`). The installer disables whichever mode's
+`portal-aiprep`, `portal-fridge`, `portal-uasdemo`). The installer disables whichever mode's
 units it's not installing, so the two never fight over ports.
 
 ### Restarting — the common mistakes
@@ -198,7 +220,8 @@ fall back to a quick tunnel: `cloudflared tunnel --url http://localhost:8100`.
 2. Add an entry to `APPS` in [config.py](config.py) (`port`, optional `home`
    path, `blocked` regexes).
 3. Add a `systemd/portal-<name>.service` unit and list it in
-   `install_services.sh` / `stop_all.sh`.
+   `install_services.sh` / `stop_all.sh`, and a matching service in
+   [compose.yaml](compose.yaml) for Docker mode.
 4. Re-run `./install_services.sh` and restart `portal.service`.
 
 ## Testing

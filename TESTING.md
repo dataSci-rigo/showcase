@@ -33,11 +33,11 @@ cd ~/Documents/portal
 
 ```bash
 systemctl --user --no-pager list-units 'portal*' 'cloudflared*'
-docker compose ps                # Docker mode only: five containers Up
-ss -tlnp | grep -E ':(8100|5051|8001|5056|8006|8007)\b'
+docker compose ps                # Docker mode only: every container Up
+ss -tlnp | grep -E ':(8100|5051|8001|5056|5057|8006|8007|8012)\b'
 ```
 
-**Expect:** all six ports listening, every one bound to `127.0.0.1` — none on
+**Expect:** every port listening, each bound to `127.0.0.1` — none on
 `0.0.0.0`. If a backend is missing, check `journalctl --user -u portal-backends -f`
 (Docker) or `-u portal-<app> -f` (bare). The omaha backend takes up to a couple
 of minutes on first start (loading the 152 MB agent).
@@ -127,6 +127,14 @@ for p in /api/donor/purge /api/ask /api/context/upload; do
 2. Build a demo fridge, ask for recipe matches.
 3. Personal mode stays locked: browse to `/` manually → the app's own
    Basic-Auth challenge appears; cancel it.
+
+### 3f. Drone Tracking Demo (static, no LLM)
+
+1. Tile → the "Keeping a drone's ID when the forest hides it" page; videos show
+   poster frames before playing.
+2. Play a video and drag the scrubber: it seeks (needs HTTP Range; a video that
+   only plays from the start means range requests are not getting through).
+3. The usage bar appears at the bottom like on every other app.
 
 ## Layer 4 — metering & the bar
 
